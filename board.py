@@ -1,13 +1,10 @@
-from .Figures.Base import EmptyCell
+from Figures.Base import EmptyCell
 
 
 class Chess_Board:
     def __init__(self):
         self.field = [[EmptyCell() for i in range(10)] for j in range(10)]
-        # self.field = np.full((10, 10), ".")
-        # self.dtype = type(self.field[0][0])
         self.fill_board()
-        # self.field = list(self.field.tolist())
         self.figures = {"p": [], "r": [], "b": [], "n": [], "k": [], "q": []}
         self.popped_figures = []
 
@@ -15,7 +12,7 @@ class Chess_Board:
         indexes = [0, 9]
         data = list(range(8, 0, -1))
         data.append(".")
-        col = ["."] * 10
+        col = [EmptyCell()] * 10
         for i in indexes:
             for j in range(1, 10):
                 col[j] = str(data[j - 1])

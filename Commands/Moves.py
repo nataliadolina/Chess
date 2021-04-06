@@ -6,7 +6,7 @@ class MoveFigure:
         self.change = change
 
     def execute(self):
-        self.figure.make_move(self.aim_row, self.aim_col, self.change)
+        return self.figure.make_move(self.aim_row, self.aim_col, self.change)
 
     def display_data(self):
         print(self.figure, self.aim_row, self.aim_col)
@@ -18,10 +18,7 @@ class MovesContainer:
 
     def execute(self):
         for command in self.commands:
-            try:
-                command.execute()
-
-            except:
-                return False
-
+            res = command.execute()
+            if not res:
+                return res
         return True

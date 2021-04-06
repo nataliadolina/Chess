@@ -1,4 +1,3 @@
-from Chess.board import board
 from math import sqrt
 
 
@@ -9,8 +8,11 @@ class Figure:
     name = ""
     full_name = ""
     dir = 1
+    board = None
 
-    def __init__(self, row, col, color):
+    def __init__(self, row, col, board, color):
+        self.board = board
+        self.color_names = {"w": "бел", "b": "чёрн"}
         self.start_cell = (row, col)
         self.row, self.col = row, col
         self.color = color
@@ -25,8 +27,8 @@ class Figure:
             self.name = self.name.upper()
             self.dir = 1
 
-        board.set_cell(self.row, self.col, self)
-        board.add_figure(self)
+        self.board.set_cell(self.row, self.col, self)
+        self.board.add_figure(self)
 
     def get_fullname(self):
         return self.full_name
@@ -52,17 +54,18 @@ class Figure:
         if not took:
             cells, moves, attacks = self.get_available_cells()
             if (row, col) in cells or change:
-                popped = board.pop_figure(row, col)
+                popped = self.board.pop_figure(row, col)
                 if popped:
                     if change:
                         return False
                     print(f"Фигура {popped.get_fullname()} выбыла из игры.")
 
                 self.set_take(row)
-                board.set_cell(row, col, self)
-                board.set_cell(self.row, self.col, EmptyCell())
+                self.board.set_cell(row, col, self)
+                self.board.set_cell(self.row, self.col, EmptyCell())
                 self.row, self.col = row, col
                 self.has_moved = True
+                #self.board.display_board()
                 return True
             return False
         return True
@@ -84,7 +87,7 @@ class Figure:
             return True
 
         try:
-            if board.is_figure(cell):
+            if self.board.is_figure(cell):
                 if cell.get_color == self.color:
                     return False
 
@@ -96,7 +99,7 @@ class Figure:
     def del_access(self, cells, for_attacks=False):
         delete = []
         for row, col in cells:
-            cell = board.get_cell(row, col)
+            cell = self.board.get_cell(row, col)
             if not self.need_to_append(cell):
                 delete.append((row, col))
                 continue
@@ -105,7 +108,7 @@ class Figure:
                 if cell.get_name() != ".":
                     delete.append((row, col))
             else:
-                if board.is_figure(cell):
+                if self.board.is_figure(cell):
                     if cell.get_color() == self.color:
                         delete.append((row, col))
                 else:
@@ -121,8 +124,8 @@ class Figure:
 
 
 class LongwayFigure(Figure):
-    def __init__(self, row, col, color="w"):
-        super().__init__(row, col, color)
+    def __init__(self, row, col, board, color="w"):
+        super().__init__(row, col, board, color)
 
     def split_by_plus(self, moves):
         row_left = []
@@ -166,7 +169,7 @@ class LongwayFigure(Figure):
     def get_plus(self):
         moves = []
         for i in range(1, 9):
-            cell = board.get_cell(i, self.col)
+            cell = self.board.get_cell(i, self.col)
             if not self.need_to_append(cell):
                 break
 
@@ -174,7 +177,7 @@ class LongwayFigure(Figure):
                 moves.append((i, self.col))
 
         for i in range(1, 9):
-            cell = board.get_cell(self.row, i)
+            cell = self.board.get_cell(self.row, i)
             if not self.need_to_append(cell):
                 break
 
@@ -194,8 +197,8 @@ class LongwayFigure(Figure):
         else:
             row, col = offset + 1, 1
 
-        while board.get_cell(row, col):
-            cell = board.get_cell(row, col)
+        while self.board.get_cell(row, col):
+            cell = self.board.get_cell(row, col)
             if not self.need_to_append(cell):
                 break
 
@@ -210,8 +213,8 @@ class LongwayFigure(Figure):
         else:
             row, col = o - 8, 8
 
-        while board.get_cell(row, col):
-            cell = board.get_cell(row, col)
+        while self.board.get_cell(row, col):
+            cell = self.board.get_cell(row, col)
             if not self.need_to_append(cell):
                 break
 
@@ -226,7 +229,7 @@ class LongwayFigure(Figure):
         cells.sort(key=lambda x: sqrt((self.row - x[0]) ** 2 + (self.col - x[1]) ** 2))
         for i in range(len(cells)):
             row, col = cells[i]
-            cell = board.get_cell(row, col)
+            cell = self.board.get_cell(row, col)
             if not cell:
                 delete.append(cells[i])
             else:
@@ -239,7 +242,7 @@ class LongwayFigure(Figure):
                     if cell == ".":
                         delete.append(cells[i])
 
-                    elif board.is_figure(cell):
+                    elif self.board.is_figure(cell):
                         if cell.get_color() == self.color:
                             delete += cells[i:]
                             break
