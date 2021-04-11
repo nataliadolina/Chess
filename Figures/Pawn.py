@@ -17,7 +17,7 @@ class Pawn(Figure):
 
     def get_possible_moves(self):
         moves = [(self.row - 1 * self.dir, self.col)]
-        if not self.has_moved:
+        if not self.if_has_moved():
             moves.append((self.row - 2 * self.dir, self.col))
         moves = self.del_access(moves)
         return moves
@@ -28,13 +28,13 @@ class Pawn(Figure):
     def make_take(self, row, col):
         takes = self.get_takes()
         if not takes:
-            return False
+            return None
         coords = [i[0] for i in takes.items()][0]
         f_coords = [i[1] for i in takes.items()][0]
         if (row, col) == coords:
-            board.pop_figure(f_coords[0], f_coords[1])
-            return True
-        return False
+            popped = board.pop_figure(f_coords[0], f_coords[1])
+            return popped
+        return None
 
     def get_takes(self):
         co = {"w": "b", "b": "w"}

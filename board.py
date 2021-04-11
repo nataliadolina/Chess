@@ -36,6 +36,9 @@ class Chess_Board:
     def add_figure(self, figure):
         self.figures[figure.get_name().lower()].append(figure)
 
+    def get_popped(self):
+        return self.popped_figures
+
     def get_figures(self):
         return self.figures
 

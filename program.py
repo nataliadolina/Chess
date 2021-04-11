@@ -1,6 +1,8 @@
 from board import board
+import os
 from Figures import Pawn, King, Queen, Rook, Bishop, Knight
-from Commands.Moves import MovesContainer, MoveFigure
+from Readers.full_notation import FullNoteReader
+from Readers.short_notation import ShortNoteReader
 
 cells = {"8": 1, "7": 2, "6": 3, "5": 4, "4": 5, "3": 6, "2": 7, "1": 8, "A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6,
          "G": 7, "H": 8}
@@ -39,34 +41,61 @@ k_w = King.King(8, 5, board)
 
 board.display_board()
 
-current = 0
 colors = ["белых", "чёрных"]
-color1 = ["белые", "чёрные"]
-b_color = {"белых": "w", "чёрных": "b"}
+current = 0
+modes = ["1. Ввод вручную", "2. Полная нотация(из файла)", "3. Краткая нотация(из файла)"]
+print("\n".join(modes))
+print("Пожалуйста, выберете из предложенных вариантов режим, в котором вы хотите играть\n"
+      "Вы сможете изменить режим в любой момент, введя другую цифру.")
+
+regime = input()
+while regime not in ["1", "2", "3"]:
+    regime = input("Недоступный режим. Попробуйте ещё раз.")
+
+regime = int(regime)
+regimes = {1: FullNoteReader, 2: FullNoteReader, 3: ShortNoteReader}
+func = regimes[regime](board)
+func1 = ShortNoteReader(board)
+func1.set_file("chess_parts/short/part1")
+func1.get_data()
+current_file = "chess_parts/"
 
 
-def move(input):
-    start, finish = input.split()
-    if input == "0-0" or input == "0-0-0":
-        king = board.get_specific_figures("k", color1[current])[0]
-        return king.castling(input)
-    try:
-        cell = board.get_cell(cells[start[1]], cells[start[0].upper()])
-        row, col = cells[finish[1]], cells[finish[0].upper()]
-        return MovesContainer(MoveFigure(cell, row, col))
+def get_file():
+    global current_file
+    file = current_file
+    found = False
+    while not found:
+        file += input("Введите путь до файла относительно chess_parts/")
+        try:
+            open(file)
 
-    except Exception:
-        return False
+        except FileNotFoundError:
+            print("Файла не существует. Введите путь до файла ещё раз.")
+            print(file)
+
+        else:
+            found = True
+
+    return file
 
 
-while board.contains_two_kings():
-    inp = input(f"Ход {colors[current]}: ")
-    moved = move(inp).execute()
-    while not moved:
-        inp = input(f"Ход {colors[current]}: ")
-        moved = move(inp).execute()
-    current += 1
-    current %= 2
+if regime in [2, 3]:
+    current_file = get_file()
+    func.set_file(current_file)
+
+commands_storage = []
+current_color = "w"
+while board.get_specific_figures("k", "w") != [] and board.get_specific_figures("k", "b") != []:
+    res_inp = func.input_data()
+    while not res_inp or type(res_inp) == int:
+        if res_inp in [1, 2, 3]:
+            func = regimes[regime](board)
+            if res_inp in [2, 3]:
+                current_file = get_file()
+                func.set_file(current_file)
+                func.change_color_query(func.get_current_color())
+
+        res_inp = func.input_data()
+    commands_storage += func.execute()
     board.display_board()
-
-print(f"{color1[current].capitalize()} выиграли!")

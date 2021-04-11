@@ -14,9 +14,11 @@ class Figure:
         self.board = board
         self.color_names = {"w": "бел", "b": "чёрн"}
         self.start_cell = (row, col)
-        self.row, self.col = row, col
         self.color = color
-        self.has_moved = False
+        self.nums_moves = 0
+
+        self.row = row
+        self.col = col
 
         self.set_name()
         if color == "b":
@@ -27,11 +29,14 @@ class Figure:
             self.name = self.name.upper()
             self.dir = 1
 
-        self.board.set_cell(self.row, self.col, self)
+        self.board.set_cell(row, col, self)
         self.board.add_figure(self)
 
     def get_fullname(self):
         return self.full_name
+
+    def set_pos(self, row, col):
+        self.row, self.col = row, col
 
     def get_name(self):
         return self.name
@@ -49,26 +54,29 @@ class Figure:
     def get_possible_attacks(self):
         return []
 
-    def make_move(self, row, col, change=False):
+    def make_move(self, row, col, change=False, sender=None):
         took = self.make_take(row, col)
-        if not took:
-            cells, moves, attacks = self.get_available_cells()
-            if (row, col) in cells or change:
-                popped = self.board.pop_figure(row, col)
-                if popped:
-                    if change:
-                        return False
-                    print(f"Фигура {popped.get_fullname()} выбыла из игры.")
+        if took and sender:
+            sender.set_popped_figure(took)
+            return True
+        cells, moves, attacks = self.get_available_cells()
+        if (row, col) in cells or change:
+            popped = self.board.pop_figure(row, col)
+            if popped:
+                if change:
+                    return False
+                sender.set_popped_figure(popped)
+                print(f"Фигура {popped.get_fullname()} выбыла из игры.")
 
-                self.set_take(row)
-                self.board.set_cell(row, col, self)
-                self.board.set_cell(self.row, self.col, EmptyCell())
-                self.row, self.col = row, col
-                self.has_moved = True
-                #self.board.display_board()
-                return True
-            return False
-        return True
+            self.set_take(row)
+            self.board.set_cell(row, col, self)
+            self.board.set_cell(self.row, self.col, EmptyCell())
+            self.row, self.col = row, col
+            return True
+        return False
+
+    def change_nums_moves(self, step):
+        self.nums_moves += step
 
     def set_take(self, row):
         pass
@@ -77,7 +85,7 @@ class Figure:
         return False
 
     def if_has_moved(self):
-        return self.has_moved
+        return self.nums_moves != 0
 
     def need_to_append(self, cell):
         if not cell or type(cell) == str:
@@ -121,6 +129,9 @@ class Figure:
 
     def get_color(self):
         return self.color
+
+    def get_board(self):
+        return self.board
 
 
 class LongwayFigure(Figure):
@@ -234,12 +245,12 @@ class LongwayFigure(Figure):
                 delete.append(cells[i])
             else:
                 if not for_attacks:
-                    if cell != ".":
+                    if cell.get_name() != ".":
                         delete += cells[i:]
                         break
 
                 else:
-                    if cell == ".":
+                    if cell.get_name() == ".":
                         delete.append(cells[i])
 
                     elif self.board.is_figure(cell):

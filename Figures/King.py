@@ -51,11 +51,9 @@ class King(Figure):
         return False
 
     def castling(self, type="0-0", need_to_check=False):
-        if self.under_attack() or self.has_moved:
+        if self.under_attack() or self.if_has_moved():
             return None
-        rr = [r for r in self.board.get_specific_figures("r", self.color)]
-        for r in rr:
-            print(r.if_has_moved())
+        # rr = [r for r in self.board.get_specific_figures("r", self.color)]
         rook = [r for r in self.board.get_specific_figures("r", self.color) if not r.if_has_moved()]
 
         if not rook:
