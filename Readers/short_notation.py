@@ -1,9 +1,9 @@
 from Commands.Moves import MovesContainer
 from Commands.Moves import MoveFigure
-from .ReaderBase import ReaderBase
+from .ReaderBase import FileReaderBase
 
 
-class ShortNoteReader(ReaderBase):
+class ShortNoteReader(FileReaderBase):
     def __init__(self, board):
         super().__init__(board)
         self.file = None
@@ -17,10 +17,6 @@ class ShortNoteReader(ReaderBase):
             return get_cells(r_file)
 
     def get_move(self, cell):
-        print(cell)
-        if cell == "Nbd7":
-            print()
-
         def convert_to_num_cell(cell_name):
             cell1 = cell_name[:]
             cell1 = "".join(filter(lambda x: x.isalpha() or x.isdigit(), list(cell1)))
@@ -64,6 +60,5 @@ class ShortNoteReader(ReaderBase):
             if len(figure_to_move) != 1:
                 return False
 
-        print(figure_to_move)
         figure_to_move = figure_to_move[0]
         return MovesContainer(MoveFigure(figure_to_move, finish[0], finish[1]))

@@ -1,12 +1,19 @@
 from Commands.Moves import MovesContainer
 from Commands.Moves import MoveFigure
-from .ReaderBase import ReaderBase
+from .ReaderBase import FileReaderBase
 
 
-class FullNoteReader(ReaderBase):
+class FullNoteReader(FileReaderBase):
     def __init__(self, board):
         super().__init__(board)
-        self.file = None
+
+    def get_data(self):
+        def get_cells(r_file):
+            s = r_file.read().split()
+            return [i[i.index(".") + 1:] if s.index(i) % 2 == 0 else i for i in s]
+
+        with open(self.file, mode="r", encoding="utf-8") as r_file:
+            return get_cells(r_file)
 
     def get_move(self, cell):
 
@@ -29,6 +36,3 @@ class FullNoteReader(ReaderBase):
         r_fin, c_fin = convert_to_num_cell(finish)
         figure = self.board.get_cell(r_start, c_start)
         return MovesContainer(MoveFigure(figure, r_fin, c_fin))
-
-# moo = FullNoteReader()
-# moo.set_file("Chess/chess_parts/full/part6")

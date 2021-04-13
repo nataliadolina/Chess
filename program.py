@@ -3,6 +3,7 @@ import os
 from Figures import Pawn, King, Queen, Rook, Bishop, Knight
 from Readers.full_notation import FullNoteReader
 from Readers.short_notation import ShortNoteReader
+from Readers.manual_input import ManualInputReader
 
 cells = {"8": 1, "7": 2, "6": 3, "5": 4, "4": 5, "3": 6, "2": 7, "1": 8, "A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6,
          "G": 7, "H": 8}
@@ -53,7 +54,7 @@ while regime not in ["1", "2", "3"]:
     regime = input("Недоступный режим. Попробуйте ещё раз.")
 
 regime = int(regime)
-regimes = {1: FullNoteReader, 2: FullNoteReader, 3: ShortNoteReader}
+regimes = {1: ManualInputReader, 2: FullNoteReader, 3: ShortNoteReader}
 func = regimes[regime](board)
 func1 = ShortNoteReader(board)
 func1.set_file("chess_parts/short/part1")
@@ -72,7 +73,6 @@ def get_file():
 
         except FileNotFoundError:
             print("Файла не существует. Введите путь до файла ещё раз.")
-            print(file)
 
         else:
             found = True
