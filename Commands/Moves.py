@@ -17,6 +17,12 @@ class MoveFigure(Command):
         self.popped = None
         self.p_row, self.p_col = None, None
 
+    def get_start(self):
+        return self.row, self.col
+
+    def get_finish(self):
+        return self.aim_row, self.aim_col
+
     def do(self):
         res = self.figure.make_move(self.aim_row, self.aim_col, self.change, self)
         if res:
@@ -25,9 +31,7 @@ class MoveFigure(Command):
 
     def set_popped_figure(self, figure):
         self.popped = figure
-        print(figure.get_color())
         self.p_row, self.p_col = figure.get_pos()
-        print("____POPPED FIGURE SETTED____", self.popped, self.p_row, self.p_col)
 
     def undo(self):
         self.figure.make_move(self.row, self.col, True)
@@ -53,3 +57,9 @@ class MovesContainer:
     def undo(self):
         for i in range(len(self.commands) - 1, -1, -1):
             self.commands[i].undo()
+
+    def get_instruction(self):
+        instruction = []
+        for command in self.commands:
+            instruction.append((command.get_start(), command.get_finish()))
+        return instruction

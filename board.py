@@ -1,4 +1,8 @@
 from Figures.Base import EmptyCell
+import colorama
+from colorama import Fore, Back, Style
+
+colorama.init()
 
 
 class Chess_Board:
@@ -113,15 +117,72 @@ class Chess_Board:
 
         return False
 
-    def display_board(self):
-        for row in self.field:
-            for col in row:
-                if type(col) != str:
-                    cell = col.get_name()
+    def get_cells_under_attack(self, color="w"):
+        figures = []
+        for key in self.figures.keys():
+            figures += self.figures[key]
+
+        enemy_figures = [_ for _ in figures if _.get_color() == color]
+        attacks = []
+        shah = []
+        for enemy in enemy_figures:
+            a = enemy.get_possible_attacks()
+            for i in range(len(a)):
+                coords = a[i]
+                row, col = coords
+                cell = self.get_cell(row, col)
+                if cell.get_name() == "k":
+                    shah.append(coords)
+                    a.remove(a[i])
+            attacks += a
+        return attacks, shah
+
+    def display_board(self, figure=None, color=None, instruction=None):
+        blue, yellow, purple, shah = [], [], [], []
+        green, red = [], []
+        if color:
+            purple, shah = self.get_cells_under_attack(color)
+            if instruction:
+                for start, finish in instruction:
+                    yellow.append(start)
+                    blue.append(finish)
+        if figure:
+            green, red = figure.get_available_cells()[1:]
+            yellow.append(figure.get_pos())
+
+        for row in range(10):
+            for col in range(10):
+                e = self.field[row][col]
+                if type(e) != str:
+                    cell = e.get_name()
 
                 else:
-                    cell = col
-                print("%4s" % cell, end="")
+                    cell = e
+
+                if (row, col) in red:
+                    cell = Back.RED + cell + "\033[0;0m"
+
+                if (row, col) in yellow:
+                    cell = Back.YELLOW + cell + "\033[0;0m"
+
+                if (row, col) in green:
+                    cell = Back.GREEN + cell + "\033[0;0m"
+
+                if (row, col) in blue:
+                    cell = Back.CYAN + cell + "\033[0;0m"
+
+                if (row, col) in purple:
+                    cell = Back.MAGENTA + cell + "\033[0;0m"
+
+                if (row, col) in shah:
+                    cell = Back.BLACK + Fore.WHITE + cell + "\033[0;0m"
+
+                if len(cell) > 4:
+                    cell = "   " + cell
+
+                cell = cell.rjust(4)
+                print(cell, end="")
+
             print()
 
     def get_board(self):

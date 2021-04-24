@@ -41,7 +41,6 @@ k_b = King.King(1, 5, board, "b")
 k_w = King.King(8, 5, board)
 
 board.display_board()
-
 colors = ["белых", "чёрных"]
 current = 0
 modes = ["1. Ввод вручную", "2. Полная нотация(из файла)", "3. Краткая нотация(из файла)"]
@@ -86,7 +85,7 @@ if regime in [2, 3]:
 
 commands_storage = []
 current_color = "w"
-while board.get_specific_figures("k", "w") != [] and board.get_specific_figures("k", "b") != []:
+while len(board.get_specific_figures("k", "w")) > 0 and len(board.get_specific_figures("k", "b")) > 0:
     res_inp = func.input_data()
     while not res_inp or type(res_inp) == int:
         if res_inp in [1, 2, 3]:
@@ -98,4 +97,3 @@ while board.get_specific_figures("k", "w") != [] and board.get_specific_figures(
 
         res_inp = func.input_data()
     commands_storage += func.execute()
-    board.display_board()

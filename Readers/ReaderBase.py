@@ -36,15 +36,16 @@ class ReaderBase:
                 data = self.data[self.cur_cursor]
                 move = self.get_move(data)
                 move.do()
-                self.board.display_board()
+                self.board.display_board(color=self.get_current_color(), instruction=move.get_instruction())
                 arr.append(move)
                 self.executed.append(move)
                 self.cur_cursor += 1
 
         elif self.cur_cursor > self.cursor:
             while self.cur_cursor != self.cursor:
-                self.cur_cursor -= 1
                 self.executed[self.cur_cursor].undo()
+                self.board.display_board(color=self.get_current_color())
+                self.cur_cursor -= 1
                 self.executed.pop(self.cur_cursor)
 
         return arr

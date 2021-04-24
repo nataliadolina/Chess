@@ -24,8 +24,14 @@ class ManualInputReader(ReaderBase):
             print("Ошибка. Не получилось расшифровать.")
             return None
         if self.board.is_figure(cell):
+
             if cell.get_color() == self.get_current_color():
                 return cell
+
+            elif not cell.get_available_cells():
+                print("Произошла ошибка. У выбранной Вами фигуры нет свободных ходов.")
+                return None
+
             else:
                 print("Произошла ошибка. Вы обратились к фигуре соперника.")
                 return None
@@ -38,14 +44,26 @@ class ManualInputReader(ReaderBase):
 
     def input_data(self):
         move_figure = None
+        rocks = {"O-O": "Короткая", "0-0": "Короткая", "O-O-O": "Длинная", "0-0-0": "Длинная"}
         while not move_figure:
             start_cell = input("Пожалуйста, введите координаты движущйся фигуры.")
+            if start_cell in ["O-O", "0-0", "O-O-O", "0-0-0"]:
+                k = self.board.get_specific_figures("k", self.get_current_color())[0]
+                res = k.castling(start_cell)
+                if not res:
+                    print(f"{rocks[start_cell]} рокировка невозможна.")
+                    continue
+                else:
+                    self.data.append(res)
+                    self.cursor += 1
+                    return res
             coords = self.convert_to_num_cell(start_cell)
             if not coords:
                 continue
             row, col = coords
             move_figure = self.get_figure(row, col)
 
+        self.board.display_board(move_figure)
         aim_move = None
         while not aim_move:
             finish_cell = input("Пожалуйста, введите координаты целевой клетки.")
@@ -59,6 +77,7 @@ class ManualInputReader(ReaderBase):
 
             else:
                 print("Выбранная Вами фигура не может ходить на эту клетку. \n Выберете одну из выделенных клеток.")
+
         self.data.append(aim_move)
         self.cursor += 1
         return aim_move
