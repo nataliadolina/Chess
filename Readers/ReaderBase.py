@@ -10,10 +10,9 @@ class ReaderBase:
         self.cells = {"8": 1, "7": 2, "6": 3, "5": 4, "4": 5, "3": 6, "2": 7, "1": 8, "A": 1, "B": 2, "C": 3, "D": 4,
                       "E": 5, "F": 6, "G": 7, "H": 8}
 
-    def change_color_query(self, cur_color):
+    def change_color_query(self, first):
         s = {"w", "b"}
-        second = self.c[cur_color]
-        first = list(s.difference(second))[0]
+        second = list(s.difference(first))[0]
         self.c = {first: self.c[first], second: self.c[second]}
 
     def get_current_color(self):

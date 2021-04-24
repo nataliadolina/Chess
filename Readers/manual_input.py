@@ -46,7 +46,7 @@ class ManualInputReader(ReaderBase):
         move_figure = None
         rocks = {"O-O": "Короткая", "0-0": "Короткая", "O-O-O": "Длинная", "0-0-0": "Длинная"}
         while not move_figure:
-            start_cell = input("Пожалуйста, введите координаты движущйся фигуры.")
+            start_cell = input(f"Ход{self.c[self.get_current_color()]}. Пожалуйста, введите координаты движущйся фигуры.")
             if start_cell in ["O-O", "0-0", "O-O-O", "0-0-0"]:
                 k = self.board.get_specific_figures("k", self.get_current_color())[0]
                 res = k.castling(start_cell)

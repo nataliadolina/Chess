@@ -89,11 +89,12 @@ while len(board.get_specific_figures("k", "w")) > 0 and len(board.get_specific_f
     res_inp = func.input_data()
     while not res_inp or type(res_inp) == int:
         if res_inp in [1, 2, 3]:
-            func = regimes[regime](board)
+            func = regimes[res_inp](board)
+            func.change_color_query(func.get_current_color())
             if res_inp in [2, 3]:
                 current_file = get_file()
                 func.set_file(current_file)
                 func.change_color_query(func.get_current_color())
-
+        print("Смена режима прошла успешно!")
         res_inp = func.input_data()
     commands_storage += func.execute()
