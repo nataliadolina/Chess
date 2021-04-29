@@ -81,8 +81,10 @@ def get_file():
 def save_to_file(name):
     path = f"chess_parts/full/{name}"
     s = ""
+    k = 0
     for i in range(0, len(commands_storage) - 1, 2):
-        pair = str(i + 1) + ". " + commands_storage[i].get_full_note_view() + " " + commands_storage[
+        k += 1
+        pair = str(k) + "." + commands_storage[i].get_full_note_view() + " " + commands_storage[
             i + 1].get_full_note_view() + "\n"
         s += pair
 
@@ -114,16 +116,22 @@ while len(board.get_specific_figures("k", "w")) > 0 and len(board.get_specific_f
 
     while not res_inp or type(res_inp) == int or res_inp == "<":
         print(res_inp)
-        if res_inp == "<":
-            if func.get_executed():
-                func.change_cursor(-1)
-
-            else:
-                commands_storage.pop(-1)
-                if prev_func:
-                    func = prev_func
-                    print("Был сделан шаг назад.")
+        if type(res_inp) == str:
+            if res_inp == "<"*len(res_inp):
+                u1, u2 = func.get_executed(), not func.get_executed() and prev_func
+                s = ""
+                if u1 or u2:
+                    if u2:
+                        f = func
+                        func = prev_func
+                        prev_func = f
+                        s = f" Сейчас действует режим {func.get_regime_name()}."
+                    else:
+                        func.change_cursor(-1)
+                    print("Был сделан шаг назад." + s)
                     break
+                else:
+                    res_inp = None
 
         if res_inp in [1, 2, 3]:
             prev_func = func

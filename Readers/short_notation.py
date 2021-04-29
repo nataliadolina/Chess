@@ -8,6 +8,10 @@ class ShortNoteReader(FileReaderBase):
         super().__init__(board)
         self.file = None
 
+    @staticmethod
+    def get_regime_name():
+        return "3 - раткая нотация(из файла)"
+
     def get_data(self):
         def get_cells(r_file):
             s = r_file.read().split()

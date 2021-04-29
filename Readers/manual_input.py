@@ -11,12 +11,16 @@ class ManualInputReader(ReaderBase):
         try:
             row, col = self.cells[cell[1]], self.cells[cell[0].upper()]
 
-        except KeyError and IndexError:
+        except KeyError or IndexError:
             print("Несуществующая клетка.")
             return None
 
         else:
             return row, col
+
+    @staticmethod
+    def get_regime_name():
+        return "1 - ввод вручную"
 
     def get_figure(self, row, col):
         cell = self.board.get_cell(row, col)
@@ -49,7 +53,7 @@ class ManualInputReader(ReaderBase):
             start_cell = input(f"Ход {self.c[self.get_current_color()]}. "
                                f"Пожалуйста, введите координаты движущйся фигуры.")
 
-            if start_cell == "<":
+            if start_cell == "<"*len(start_cell):
                 return start_cell
 
             if start_cell.lower() == "stop":

@@ -10,9 +10,9 @@ class ReaderBase:
         self.cells = {"8": 1, "7": 2, "6": 3, "5": 4, "4": 5, "3": 6, "2": 7, "1": 8, "A": 1, "B": 2, "C": 3, "D": 4,
                       "E": 5, "F": 6, "G": 7, "H": 8}
 
-    def change_color_query(self, second):
+    def change_color_query(self, first):
         s = {"w", "b"}
-        first = list(s.difference(second))[0]
+        second = list(s.difference(first))[0]
         self.c = {first: self.c[first], second: self.c[second]}
 
     def get_current_color(self):
@@ -36,6 +36,7 @@ class ReaderBase:
         self.cursor += value
 
     def execute(self):
+        c = {"w": "Белые", "b": "Чёрные"}
         if self.cur_cursor < self.cursor:
             while self.cur_cursor != self.cursor:
                 data = self.data[self.cur_cursor]
@@ -43,6 +44,7 @@ class ReaderBase:
                 move.do()
                 if move.get_commands_count() != 2:
                     move.set_full_note_view()
+                print(f"{c[self.get_current_color()]} сходили.")
                 self.board.display_board(color=self.get_current_color(), instruction=move.get_instruction())
                 self.executed.append(move)
                 self.cur_cursor += 1
@@ -50,6 +52,7 @@ class ReaderBase:
         elif self.cur_cursor > self.cursor:
             while self.cur_cursor != self.cursor:
                 self.executed[self.cur_cursor - 1].undo()
+                print(f"{c[self.get_current_color()]} сходили.")
                 self.board.display_board(color=self.get_current_color(),
                                          instruction=self.executed[self.cur_cursor - 1].get_instruction())
                 self.cur_cursor -= 1
@@ -65,13 +68,14 @@ class FileReaderBase(ReaderBase):
         pass
 
     def input_data(self):
-        data = input(f"Ход {self.c[self.get_current_color()]}:")
+        data = input(
+            f"Введите один знак или комбинацию знаков из > и < или переключитесь на мануальный режим (введите 1)")
         if data in ["1", "2", "3"]:
             return int(data)
 
         data = "".join(list(filter(lambda x: x == ">" or x == "<", list(data))))
         if data == "":
-            print("Некорректный ввод. Вы можете вводить только знаки <, > или номер режима (1, 2, 3)")
+            print("Некорректный ввод. Вы можете вводить только знаки <, > или номер режима 1")
             return False
 
         aim_cursor = self.cur_cursor + data.count(">") - data.count("<")

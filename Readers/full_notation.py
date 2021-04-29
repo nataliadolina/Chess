@@ -7,9 +7,14 @@ class FullNoteReader(FileReaderBase):
     def __init__(self, board):
         super().__init__(board)
 
+    @staticmethod
+    def get_regime_name():
+        return "2 - полная нотация(из файла)"
+
     def get_data(self):
         def get_cells(r_file):
             s = r_file.read().split()
+            print(s)
             return [i[i.index(".") + 1:] if s.index(i) % 2 == 0 else i for i in s]
 
         with open(self.file, mode="r", encoding="utf-8") as r_file:
@@ -37,4 +42,5 @@ class FullNoteReader(FileReaderBase):
         r_start, c_start = convert_to_num_cell(start)
         r_fin, c_fin = convert_to_num_cell(finish)
         figure = self.board.get_cell(r_start, c_start)
+        self.board.display_board()
         return MovesContainer(MoveFigure(figure, r_fin, c_fin))
