@@ -1,5 +1,4 @@
 from board import board
-import os
 from Figures import Pawn, King, Queen, Rook, Bishop, Knight
 from Readers.full_notation import FullNoteReader
 from Readers.short_notation import ShortNoteReader
@@ -79,22 +78,63 @@ def get_file():
     return file
 
 
+def save_to_file(name):
+    path = f"chess_parts/full/{name}"
+    s = ""
+    for i in range(0, len(commands_storage) - 1, 2):
+        pair = str(i + 1) + ". " + commands_storage[i].get_full_note_view() + " " + commands_storage[
+            i + 1].get_full_note_view() + "\n"
+        s += pair
+
+    with open(path, 'wt') as f:
+        f.write(s)
+
+
 if regime in [2, 3]:
     current_file = get_file()
     func.set_file(current_file)
 
 commands_storage = []
 current_color = "w"
+prev_func = None
 while len(board.get_specific_figures("k", "w")) > 0 and len(board.get_specific_figures("k", "b")) > 0:
     res_inp = func.input_data()
-    while not res_inp or type(res_inp) == int:
+    if res_inp == "stop":
+        commands_storage += func.get_executed()
+        need_to_save = input("Хотите сохранить разыгранную партию в  файл? Пожалуйста, введите да или нет.").lower()
+        while need_to_save not in ["да", "нет"]:
+            need_to_save = input("Хотите сохранить разыгранную партию в  файл? Пожалуйста, введите да или нет.").lower()
+
+        if need_to_save == "да":
+            file_name = input("Введите название файла. В файл с таким названием будет сохранена ваша партия.")
+            save_to_file(file_name)
+            print(f"Готово! Файл с вашей партией, записанной в полной нотации, \n"
+                  f" находится по адресу chess_parts/full/{file_name}")
+        break
+
+    while not res_inp or type(res_inp) == int or res_inp == "<":
+        print(res_inp)
+        if res_inp == "<":
+            if func.get_executed():
+                func.change_cursor(-1)
+
+            else:
+                commands_storage.pop(-1)
+                if prev_func:
+                    func = prev_func
+                    print("Был сделан шаг назад.")
+                    break
+
         if res_inp in [1, 2, 3]:
-            func = regimes[res_inp](board)
+            prev_func = func
+            func = regimes[int(res_inp)](board)
             func.change_color_query(func.get_current_color())
             if res_inp in [2, 3]:
                 current_file = get_file()
                 func.set_file(current_file)
-                func.change_color_query(func.get_current_color())
-        print("Смена режима прошла успешно!")
+            print("Смена режима прошла успешно!")
+            commands_storage += prev_func.get_executed()
         res_inp = func.input_data()
-    commands_storage += func.execute()
+    func.execute()
+
+print("Ввод прерван по просьбе игроков.")

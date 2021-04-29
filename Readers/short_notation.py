@@ -26,7 +26,9 @@ class ShortNoteReader(FileReaderBase):
         current_color = self.get_current_color()
         if cell == "O-O" or cell == "O-O-O":
             k = self.board.get_specific_figures("k", current_color)[0]
-            return k.castling(cell)
+            castle = k.castling(cell)
+            castle.set_full_note_view(cell)
+            return castle
 
         figures = []
         if len(cell) > 2 and cell[0].upper() == cell[0]:

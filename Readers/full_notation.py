@@ -24,7 +24,9 @@ class FullNoteReader(FileReaderBase):
 
         if cell == "0-0" or cell == "0-0-0":
             king = self.board.get_specific_figures("k", self.get_current_color())[0]
-            return king.castling(cell)
+            castle = king.castling(cell)
+            castle.set_full_note_view(cell)
+            return castle
 
         start, finish = None, None
         if "-" in cell:

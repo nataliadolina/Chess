@@ -16,6 +16,22 @@ class MoveFigure(Command):
 
         self.popped = None
         self.p_row, self.p_col = None, None
+        self.full_notation_view = ""
+
+    def get_full_notation_view(self):
+        cells_row = {1: "8", 2: "7", 3: "6", 4: "5", 5: "4", 6: "3", 7: "2", 8: "1"}
+        cells_col = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H"}
+        delemeter = "-"
+        name = ''
+        start_cell = cells_col[self.col].lower() + cells_row[self.row]
+        finish_cell = cells_col[self.aim_col].lower() + cells_row[self.aim_row]
+        if self.figure.get_name().lower() != "p":
+            name = self.figure.get_name().upper()
+
+        if self.popped:
+            delemeter = "x"
+
+        return name + start_cell + delemeter + finish_cell
 
     def get_start(self):
         return self.row, self.col
@@ -46,6 +62,7 @@ class MoveFigure(Command):
 class MovesContainer:
     def __init__(self, *moves):
         self.commands = moves
+        self.full_note_view = ""
 
     def do(self):
         for command in self.commands:
@@ -57,6 +74,21 @@ class MovesContainer:
     def undo(self):
         for i in range(len(self.commands) - 1, -1, -1):
             self.commands[i].undo()
+
+    def set_full_note_view(self, view=""):
+        r = {"0-0": "0-0", "O-O": "0-0", "O-O-O": "0-0-0", "0-0-0": "0-0-0"}
+        if view == "":
+            for command in self.commands:
+                self.full_note_view += command.get_full_notation_view()
+
+        else:
+            self.full_note_view = r[view]
+
+    def get_full_note_view(self):
+        return self.full_note_view
+
+    def get_commands_count(self):
+        return len(self.commands)
 
     def get_instruction(self):
         instruction = []
