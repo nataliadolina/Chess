@@ -118,7 +118,6 @@ while len(board.get_specific_figures("k", "w")) > 0 and len(board.get_specific_f
         break
 
     while not res_inp or type(res_inp) == int:
-        print(res_inp)
         if res_inp == 1:
             prev_func = func
             func = regimes[int(res_inp)](board)

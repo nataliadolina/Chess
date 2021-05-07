@@ -14,7 +14,6 @@ class FullNoteReader(FileReaderBase):
     def get_data(self):
         def get_cells(r_file):
             s = r_file.read().split()
-            print(s)
             return [i[i.index(".") + 1:] if s.index(i) % 2 == 0 else i for i in s]
 
         with open(self.file, mode="r", encoding="utf-8") as r_file:
