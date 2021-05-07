@@ -11,7 +11,7 @@ class ManualInputReader(ReaderBase):
         try:
             row, col = self.cells[cell[1]], self.cells[cell[0].upper()]
 
-        except KeyError or IndexError:
+        except:
             print("Несуществующая клетка.")
             return None
 
@@ -53,9 +53,6 @@ class ManualInputReader(ReaderBase):
             start_cell = input(f"Ход {self.c[self.get_current_color()]}. "
                                f"Пожалуйста, введите координаты движущйся фигуры.")
 
-            if start_cell == "<"*len(start_cell):
-                return start_cell
-
             if start_cell.lower() == "stop":
                 return "stop"
 
@@ -76,7 +73,6 @@ class ManualInputReader(ReaderBase):
                 continue
             row, col = coords
             move_figure = self.get_figure(row, col)
-
         self.board.display_board(move_figure)
         aim_move = None
         while not aim_move:

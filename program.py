@@ -114,32 +114,12 @@ while len(board.get_specific_figures("k", "w")) > 0 and len(board.get_specific_f
                   f" находится по адресу chess_parts/full/{file_name}")
         break
 
-    while not res_inp or type(res_inp) == int or res_inp == "<":
+    while not res_inp or type(res_inp) == int:
         print(res_inp)
-        if type(res_inp) == str:
-            if res_inp == "<"*len(res_inp):
-                u1, u2 = func.get_executed(), not func.get_executed() and prev_func
-                s = ""
-                if u1 or u2:
-                    if u2:
-                        f = func
-                        func = prev_func
-                        prev_func = f
-                        s = f" Сейчас действует режим {func.get_regime_name()}."
-                    else:
-                        func.change_cursor(-1)
-                    print("Был сделан шаг назад." + s)
-                    break
-                else:
-                    res_inp = None
-
-        if res_inp in [1, 2, 3]:
+        if res_inp == 1:
             prev_func = func
             func = regimes[int(res_inp)](board)
-            func.change_color_query(func.get_current_color())
-            if res_inp in [2, 3]:
-                current_file = get_file()
-                func.set_file(current_file)
+            func.change_color_query(prev_func.get_current_color())
             print("Смена режима прошла успешно!")
             commands_storage += prev_func.get_executed()
         res_inp = func.input_data()

@@ -32,11 +32,18 @@ class ReaderBase:
         return self.executed
 
     def change_cursor(self, value):
-        self.cur_cursor += value
-        self.cursor += value
+        aim_cursor = self.cur_cursor + value
+        if aim_cursor < 0 or aim_cursor > len(self.data):
+            print(f"Курсор не входит в рамки данных файла. \n"
+                  f" В наcтоящее время курсор стоит на {str(self.cur_cursor)}ой команде.\n Вы можете двигать курсор"
+                  f" в диапазоне от 0 до {len(self.data)}.")
+            return False
+        self.cursor = aim_cursor
+        return True
 
     def execute(self):
         c = {"w": "Белые", "b": "Чёрные"}
+        r_c = {"b": "Белые", "w": "Чёрные"}
         if self.cur_cursor < self.cursor:
             while self.cur_cursor != self.cursor:
                 data = self.data[self.cur_cursor]
@@ -52,7 +59,8 @@ class ReaderBase:
         elif self.cur_cursor > self.cursor:
             while self.cur_cursor != self.cursor:
                 self.executed[self.cur_cursor - 1].undo()
-                print(f"{c[self.get_current_color()]} сходили.")
+                # self.change_color_query(self.get_current_color())
+                print(f"{r_c[self.get_current_color()]} отменили ход.")
                 self.board.display_board(color=self.get_current_color(),
                                          instruction=self.executed[self.cur_cursor - 1].get_instruction())
                 self.cur_cursor -= 1
@@ -70,7 +78,7 @@ class FileReaderBase(ReaderBase):
     def input_data(self):
         data = input(
             f"Введите один знак или комбинацию знаков из > и < или переключитесь на мануальный режим (введите 1)")
-        if data in ["1", "2", "3"]:
+        if data == "1":
             return int(data)
 
         data = "".join(list(filter(lambda x: x == ">" or x == "<", list(data))))
@@ -78,14 +86,7 @@ class FileReaderBase(ReaderBase):
             print("Некорректный ввод. Вы можете вводить только знаки <, > или номер режима 1")
             return False
 
-        aim_cursor = self.cur_cursor + data.count(">") - data.count("<")
-        if aim_cursor < 0 or aim_cursor > len(self.data):
-            print(f"Курсор не входит в рамки данных файла. \n"
-                  f" В наcтоящее время курсор стоит на {str(self.cur_cursor)}ой команде.\n Вы можете двигать курсор"
-                  f" в диапазоне от 0 до {len(self.data)-1}.")
-            return False
-        self.cursor = aim_cursor
-        return True
+        return self.change_cursor(data.count(">") - data.count("<"))
 
     def set_file(self, filename):
         self.file = filename
