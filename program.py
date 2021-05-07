@@ -88,6 +88,9 @@ def save_to_file(name):
             i + 1].get_full_note_view() + "\n"
         s += pair
 
+    if k-1 < len(commands_storage) - 1:
+        s += str(k+1) + "." + commands_storage[-1].get_full_note_view()
+
     with open(path, 'wt') as f:
         f.write(s)
 
